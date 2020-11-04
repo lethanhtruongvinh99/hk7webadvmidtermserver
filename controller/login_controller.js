@@ -11,28 +11,28 @@ router.use(
   })
 );
 router.use(bodyParser.json());
-router.get("/", async (req, res) => {
-  res.send({ message: "Sign up" });
+
+router.get("/", (req, res) => {
+  res.send("Login");
+  res.end();
 });
+
 router.post("/", async (req, res) => {
   try {
-    const newUser = {
-      username: req.body.username,
-      password: req.body.password,
-      isCreated: new Date(),
-    };
-    const findUsername = await user.checkExistedUsername(newUser.username);
-    if (findUsername.length === 1) {
-      console.log(findUsername.length);
-      res.json({ status: 201 });
+    const username = req.body.username;
+    const password = req.body.password;
+    console.log(username);
+    const userLogin = await user.byAccount(username, password);
+    if (userLogin.length === 1) {
+      res.json({ status: 200, user: userLogin[0] });
       res.end();
     } else {
-      await db.add(tbUser, newUser);
-      res.json({ status: 200 });
+      res.json({ status: 204, message: "Failed"});
       res.end();
     }
   } catch (err) {
     console.log(err);
   }
 });
+
 module.exports = router;

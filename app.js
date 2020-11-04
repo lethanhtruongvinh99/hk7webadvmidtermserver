@@ -3,11 +3,14 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./Components/users");
 let boardsRouter = require("./Components/boards");
 let signupRouter = require("./controller/signup_controller");
+let loginRouter = require("./controller/login_controller");
 
 var app = express();
 app.use(function (req, res, next) {
@@ -29,13 +32,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/boards", boardsRouter);
 
 app.use("/signup", signupRouter);
-
+app.use("/login", loginRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

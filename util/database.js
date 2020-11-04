@@ -1,5 +1,6 @@
 const { create } = require("hbs");
 const mysql = require("mysql");
+
 function createConnection() {
   return mysql.createConnection({
     // host: "db4free.net",
@@ -50,5 +51,26 @@ module.exports.add = (tbName, entity) => {
       }
     });
     con.end();
+  });
+};
+module.exports.update = (tbName, entity, idField) => {
+  return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
+      const con = createConnection();
+      con.connect((err) => {
+        if (err) {
+          reject(err);
+        }
+      });
+      let sql = `UPDATE ${tbName} SET ? WHERE ${idField} = ${entity[idField]}`;
+      con.query(sql, entity, (error, results, fields) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(results.affectedRows);
+        }
+      });
+      con.end();
+    });
   });
 };
