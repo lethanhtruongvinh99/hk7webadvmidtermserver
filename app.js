@@ -4,6 +4,7 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const jwt = require("jsonwebtoken");
+const cors = require("cors");
 require("dotenv").config();
 
 var indexRouter = require("./routes/index");
@@ -13,6 +14,8 @@ let signupRouter = require("./controller/signup_controller");
 let loginRouter = require("./controller/login_controller");
 
 var app = express();
+app.use(cors());
+app.options('*', cors());
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
