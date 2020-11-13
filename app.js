@@ -12,10 +12,11 @@ var usersRouter = require("./Components/users");
 let boardsRouter = require("./Components/boards");
 let signupRouter = require("./controller/signup_controller");
 let loginRouter = require("./controller/login_controller");
+let columnRouter = require("./Components/columns/");
 
 var app = express();
 app.use(cors());
-app.options('*', cors());
+app.options("*", cors());
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
@@ -38,6 +39,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/boards", boardsRouter);
+app.use("/columns", columnRouter);
 
 app.use("/signup", signupRouter);
 app.use("/login", loginRouter);

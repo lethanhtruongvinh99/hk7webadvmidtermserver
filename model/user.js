@@ -21,6 +21,10 @@ module.exports = {
         const sql = `SELECT * from ${tbUser} WHERE username="${username}"`;
         const rows = await db.load(sql);
         return rows;
+    },
+    byUserId: async (userId) => {
+        const sql = `SELECT * from ${tbUser} WHERE userId=${userId} AND isDeleted=false`;
+        const rows = await db.load(sql);
+        return rows;
     }
-
 }

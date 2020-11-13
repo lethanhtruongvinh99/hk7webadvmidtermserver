@@ -36,13 +36,39 @@ router.post("/add", async (req, res) => {
         isCreated: new Date(),
       };
       const addNew = await db.add(tbBoardName, newBoard);
-      if (addNew === 1) {
-        res.status(200).send({ message: "Thêm thành công" });
+      console.log(addNew);
+      if (addNew.affectedRows === 1) {
+        res.status(200).send({
+          message: "Thêm thành công",
+          data: {
+            boardId: addNew.insertId,
+            userId: userId,
+            boardName: req.body.boardName,
+            isCreated: newBoard.isCreated,
+            isDeleted: false,
+            isUpdated: null,
+          },
+        });
       } else {
         res.status(403).send({ message: "Có lỗi xảy ra khi thêm" });
       }
     } catch (err) {
       res.status(402).send({ message: err }).end();
+    }
+  } else {
+    res.status(401).send({ message: "Lỗi xác thực" }).end();
+  }
+});
+router.get("/boardId=:BoarId", async (req, res) => {
+  const token = req.headers.authorization;
+  if (token) {
+    const boardId = req.params.BoarId;
+    console.log(boardId);
+    const getByBoardId = await tbBoard.byBoardId(boardId);
+    if (getByBoardId[0]){
+      res.status(200).send(getByBoardId[0]).end();
+    } else {
+
     }
   } else {
     res.status(401).send({ message: "Lỗi xác thực" }).end();
@@ -69,6 +95,9 @@ router.post("/delete", async (req, res) => {
   }
 });
 router.post("/update", async (req, res) => {
+  if (req.body.newBoardName.length === 0) {
+    return res.status(402).send({ message: "Không được để trống" }).end();
+  }
   try {
     let updateBoard = {
       boardId: req.body.boardId,

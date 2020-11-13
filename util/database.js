@@ -47,12 +47,13 @@ module.exports.add = (tbName, entity) => {
       if (error) {
         reject(error);
       } else {
-        resolve(results.affectedRows);
+        resolve(results);
       }
     });
     con.end();
   });
 };
+//update board infomation
 module.exports.update = (tbName, entity, idField) => {
   return new Promise((resolve, reject) => {
     const con = createConnection();
@@ -72,3 +73,24 @@ module.exports.update = (tbName, entity, idField) => {
     con.end();
   });
 };
+//update user info
+module.exports.update2 = (tbName, entity, idField) => {
+  return new Promise((resolve, reject) => {
+    const con = createConnection();
+    con.connect((err) => {
+      if (err) {
+        reject(err);
+      }
+    });
+    let sql = `UPDATE ${tbName} SET ? WHERE userId=${idField}`;
+    con.query(sql, entity, (error, results, fields) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(results.affectedRows);
+      }
+    });
+    con.end();
+  });
+};
+

@@ -19,6 +19,10 @@ router.get("/", (req, res) => {
   res.end();
 });
 
+router.get("/authCheck", async (req, res) => {
+  res.send("Check Token is Expire").end();
+});
+
 router.post("/", async (req, res) => {
   try {
     const secret = process.env.JWT_SECRET;
@@ -45,7 +49,10 @@ router.post("/", async (req, res) => {
       );
       res.status(200).send({ accessToken: token }).end();
     } else {
-      res.status(401).send({ message: "Sai tên đăng nhập hoặc Mật khẩu!" }).end();
+      res
+        .status(401)
+        .send({ message: "Sai tên đăng nhập hoặc Mật khẩu!" })
+        .end();
       return;
     }
   } catch (err) {
