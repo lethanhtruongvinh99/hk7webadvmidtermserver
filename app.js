@@ -7,12 +7,13 @@ const jwt = require("jsonwebtoken");
 const cors = require("cors");
 require("dotenv").config();
 
-var indexRouter = require("./routes/index");
-var usersRouter = require("./Components/users");
+let indexRouter = require("./routes/index");
+let usersRouter = require("./Components/users");
 let boardsRouter = require("./Components/boards");
 let signupRouter = require("./controller/signup_controller");
 let loginRouter = require("./controller/login_controller");
 let columnRouter = require("./Components/columns/");
+let taskRouter = require("./Components/tasks");
 
 var app = express();
 app.use(cors());
@@ -40,6 +41,7 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/boards", boardsRouter);
 app.use("/columns", columnRouter);
+app.use("/tasks", taskRouter);
 
 app.use("/signup", signupRouter);
 app.use("/login", loginRouter);

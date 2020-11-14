@@ -1,45 +1,58 @@
 const express = require("express");
-// const { authCheck } = require("../../middleware/authCheck");
 const router = express.Router();
-const tbColumn = require("../../model/column");
-const tbColumnName = "task";
 const tbTask = require("../../model/task");
-const tbTaskName = "comment";
-const db = require("../../util/database");
 const jwt = require("jsonwebtoken");
+const db = require("../../util/database");
+const tbColumnName = "task";
+const tbTaskName = "comment";
+const bcrypt = require("bcrypt");
 
-router.get("/allColumns", async (req, res) => {
-  let columnList = await tbColumn.all();
-  res.send(columnList).end();
+router.get("/", async (req, res) => {
+  const listTask = await tbTask.all();
+  res.status(200).send(listTask).end();
 });
-//add new column as well as task
+
+router.post("/tasks", async (req, res) => {
+  try {
+    columnId = req.body.columnId;
+    let listTaskByColumnId = await tbTask.byColumnId(columnId);
+    res.status(200).send(listTaskByColumnId).end();
+  } catch (err) {
+    res.status(402).send({ message: err }).end();
+  }
+});
+
 router.post("/add", async (req, res) => {
   const token = req.headers.authorization;
+  console.log(token);
   if (token === "null") {
     return res.status(401).send({ message: "Bạn chưa đăng nhập" }).end();
   }
   if (token) {
+    if (req.body.content.length === 0) {
+      return res.status(402).send({ message: "Không được bỏ trống!" }).end();
+    }
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decoded.data.userId;
     try {
-      let newColumn = {
-        boardId: req.body.boardId,
+      let newTask = {
+        taskId: req.body.columnId,
         userId: userId,
-        taskName: req.body.taskName,
+        content: req.body.content,
         isCreated: new Date(),
       };
-      const addNewColumn = await db.add(tbColumnName, newColumn);
-      console.log(addNewColumn);
-      if (addNewColumn.affectedRows === 1) {
+      const addNewTask = await db.add(tbTaskName, newTask);
+      console.log(addNewTask);
+      if (addNewTask.affectedRows === 1) {
         res.status(200).send({
           message: "Thêm thành công",
           data: {
-            taskId: addNewColumn.insertId,
-            boardId: newColumn.boardId,
+            taskId: addNewTask.insertId,
+            boardId: newTask.boardId,
             userId: userId,
-            taskName: newColumn.taskName,
+            content: newTask.content,
             isDeleted: false,
-            isCreated: newColumn.isCreated,
+            isCreated: newTask.isCreated,
             isUpdated: null,
           },
         });
@@ -47,43 +60,40 @@ router.post("/add", async (req, res) => {
         res.status(403).send({ message: "Có lỗi xảy ra khi thêm" }).end();
       }
     } catch (err) {
-      res.status(402).send({ message: "Lỗi xác thực" }).end();
+      console.log(err);
+      res.status(402).send({ message: err }).end();
     }
   } else {
     res.status(401).send({ message: "Lỗi xác thực" }).end();
   }
 });
-router.post("/columns", async (req, res) => {
-  const boardId = req.body.boardId;
-  const columns = await tbColumn.byBoardId(boardId);
-  res.status(200).send(columns).end();
-});
+
 router.post("/update", async (req, res) => {
   const token = req.headers.authorization;
   if (token === "null") {
     return res.status(401).send({ message: "Bạn chưa đăng nhập" }).end();
   }
   if (token) {
-    if (req.body.newcolumnName.length === 0) {
+    if (req.body.newTaskName.length === 0) {
       return res.status(402).send({ message: "Không được để trống" }).end();
     }
     try {
-      let updateColumn = {
-        taskId: req.body.taskId,
-        taskName: req.body.newcolumnName,
+      let updateTask = {
+        commentId: req.body.taskId,
+        content: req.body.newTaskName,
         isUpdated: new Date(),
       };
-      const updateStatus = await db.update3(
-        tbColumnName,
-        updateColumn,
-        updateColumn.taskId
+      const updateStatus = await db.update4(
+        tbTaskName,
+        updateTask,
+        updateTask.commentId
       );
       if (updateStatus.affectedRows === 1) {
         res.status(200).send({ message: "Sửa thành công" }).end();
       }
     } catch (err) {
       console.log(err);
-      res.status(401).send({ message: "Có lỗi xảy ra" }).end();
+      res.status(401).send({ message: err }).end();
     }
   } else {
     res.status(401).send({ message: "Lỗi xác thực" }).end();
@@ -94,32 +104,24 @@ router.post("/delete", async (req, res) => {
   if (token === "null") {
     return res.status(401).send({ message: "Bạn chưa đăng nhập" }).end();
   }
-  //delete all comment => delete column
   if (token) {
     try {
-      const listTask = await tbTask.byColumnId(req.body.taskId);
-      const updateDate = new Date();
-      for (let i = 0; i < listTask.length; i++) {
-        listTask[i].isDeleted = true;
-        listTask[i].isUpdated = updateDate;
-        await db.update4(tbTaskName, listTask[i], listTask[i].commentId);
-      }
-      let deleteColumn = {
-        taskId: req.body.taskId,
-        isUpdated: new Date(),
+      let deleteTask = {
+        commentId: req.body.taskId,
         isDeleted: true,
+        isUpdated: new Date(),
       };
-      const updateStatus = await db.update3(
-        tbColumnName,
-        deleteColumn,
-        deleteColumn.taskId
+      const deleteTaskStatus = await db.update4(
+        tbTaskName,
+        deleteTask,
+        deleteTask.commentId
       );
-      if (updateStatus.affectedRows === 1) {
+      if (deleteTaskStatus.affectedRows === 1) {
         res.status(200).send({ message: "Xóa thành công" }).end();
       }
     } catch (err) {
       console.log(err);
-      res.status(401).send({ message: "Có lỗi xảy ra" }).end();
+      res.status(401).send({ message: err }).end();
     }
   } else {
     res.status(401).send({ message: "Lỗi xác thực" }).end();

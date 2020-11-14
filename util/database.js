@@ -93,4 +93,43 @@ module.exports.update2 = (tbName, entity, idField) => {
     con.end();
   });
 };
-
+//update Column info
+module.exports.update3 = (tbName, entity, idField) => {
+  return new Promise((resolve, reject) => {
+    const con = createConnection();
+    con.connect((err) => {
+      if (err) {
+        reject(err);
+      }
+    });
+    let sql = `UPDATE ${tbName} SET ? WHERE taskId=${idField}`;
+    con.query(sql, entity, (error, results, fields) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(results);
+      }
+    });
+    con.end();
+  });
+};
+//update Comment info
+module.exports.update4 = (tbName, entity, idField) => {
+  return new Promise((resolve, reject) => {
+    const con = createConnection();
+    con.connect((err) => {
+      if (err) {
+        reject(err);
+      }
+    });
+    let sql = `UPDATE ${tbName} SET ? WHERE commentId=${idField}`;
+    con.query(sql, entity, (error, results, fields) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(results);
+      }
+    });
+    con.end();
+  });
+};

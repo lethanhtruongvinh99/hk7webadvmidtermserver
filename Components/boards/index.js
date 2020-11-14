@@ -26,6 +26,9 @@ router.get("/allBoards", async (req, res, next) => {
 });
 router.post("/add", async (req, res) => {
   const token = req.headers.authorization;
+  if (token === "null"){
+    return res.status(401).send({ message: "Bạn chưa đăng nhập" }).end();
+  }
   if (token) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decoded.data.userId;
@@ -60,61 +63,71 @@ router.post("/add", async (req, res) => {
   }
 });
 router.get("/boardId=:BoarId", async (req, res) => {
+  const boardId = req.params.BoarId;
+  console.log(boardId);
+  const getByBoardId = await tbBoard.byBoardId(boardId);
+  if (getByBoardId[0]) {
+    res.status(200).send(getByBoardId[0]).end();
+  } else {
+  }
+});
+router.post("/delete", async (req, res) => {
   const token = req.headers.authorization;
+  if (token === "null"){
+    return res.status(401).send({ message: "Bạn chưa đăng nhập" }).end();
+  }
   if (token) {
-    const boardId = req.params.BoarId;
-    console.log(boardId);
-    const getByBoardId = await tbBoard.byBoardId(boardId);
-    if (getByBoardId[0]){
-      res.status(200).send(getByBoardId[0]).end();
-    } else {
-
+    try {
+      let delBoard = {
+        boardId: req.body.boardId,
+        isDeleted: true,
+        isUpdated: new Date(),
+      };
+      const delBoardStatus = await db.update(
+        tbBoardName,
+        delBoard,
+        delBoard.boardId
+      );
+      if (delBoardStatus === 1) {
+        res.status(200).send({ message: "Xóa thành công" }).end();
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(401).send({ message: "Có lỗi xảy ra" }).end();
     }
   } else {
     res.status(401).send({ message: "Lỗi xác thực" }).end();
   }
 });
-router.post("/delete", async (req, res) => {
-  try {
-    let delBoard = {
-      boardId: req.body.boardId,
-      isDeleted: true,
-      isUpdated: new Date(),
-    };
-    const delBoardStatus = await db.update(
-      tbBoardName,
-      delBoard,
-      delBoard.boardId
-    );
-    if (delBoardStatus === 1) {
-      res.status(200).send({ message: "Xóa thành công" }).end();
-    }
-  } catch (err) {
-    console.log(err);
-    res.status(401).send({ message: "Có lỗi xảy ra" }).end();
-  }
-});
 router.post("/update", async (req, res) => {
-  if (req.body.newBoardName.length === 0) {
-    return res.status(402).send({ message: "Không được để trống" }).end();
+  const token = req.headers.authorization;
+  if (token === "null"){
+    return res.status(401).send({ message: "Bạn chưa đăng nhập" }).end();
   }
-  try {
-    let updateBoard = {
-      boardId: req.body.boardId,
-      boardName: req.body.newBoardName,
-      isUpdated: new Date(),
-    };
-    const updateStatus = await db.update(
-      tbBoardName,
-      updateBoard,
-      updateBoard.boardId
-    );
-    if (updateStatus === 1) {
-      res.status(200).send({ message: "Sửa thành công" }).end();
+  if (token) {
+    if (req.body.newBoardName.length === 0) {
+      return res.status(402).send({ message: "Không được để trống" }).end();
     }
-  } catch (err) {
-    console.log(err);
-    res.status(401).send({ message: "Có lỗi xảy ra" }).end();
+    try {
+      let updateBoard = {
+        boardId: req.body.boardId,
+        boardName: req.body.newBoardName,
+        isUpdated: new Date(),
+      };
+      const updateStatus = await db.update(
+        tbBoardName,
+        updateBoard,
+        updateBoard.boardId
+      );
+      if (updateStatus === 1) {
+        res.status(200).send({ message: "Sửa thành công" }).end();
+      }
+    } catch (err) {
+      console.log(err);
+      res.status(401).send({ message: "Có lỗi xảy ra" }).end();
+    }
+  } else {
+    res.status(401).send({ message: "Lỗi xác thực" }).end();
   }
 });
 
