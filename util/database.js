@@ -3,16 +3,16 @@ const mysql = require("mysql");
 
 function createConnection() {
   return mysql.createConnection({
-    // host: "db4free.net",
-    // port: 3306,
-    // user: "truongvinh",
-    // password: "cf333d3f",
-    // database: "hk7webadvmidterm",
-    host: "localhost",
+    host: "db4free.net",
     port: 3306,
-    user: "root",
-    password: "1234",
+    user: "truongvinh",
+    password: "cf333d3f",
     database: "hk7webadvmidterm",
+    // host: "localhost",
+    // port: 3306,
+    // user: "root",
+    // password: "1234",
+    // database: "hk7webadvmidterm",
   });
 }
 
