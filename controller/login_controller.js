@@ -12,7 +12,7 @@ const { route } = require("../routes");
 let tempUser;
 const localhost3000 = "http://localhost:3000";
 const localhost3001 = "http://localhost:3001";
-const githubpages = "https://lethanhtruongvinh99.github.io";
+const githubpages = "https://lethanhtruongvinh99.github.io/hk7webadvmidtermclient/#";
 
 router.use(
   bodyParser.urlencoded({
