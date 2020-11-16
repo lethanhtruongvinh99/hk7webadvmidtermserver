@@ -6,6 +6,10 @@ const user = require("../model/user");
 const tbUser = "user";
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const passport = require("passport");
+const { route } = require("../routes");
+
+let tempUser;
 
 router.use(
   bodyParser.urlencoded({
@@ -59,5 +63,40 @@ router.post("/", async (req, res) => {
     console.log(err);
   }
 });
+//google
+router.get(
+  "/google",
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+  })
+);
+
+router.get("/google/redirect", passport.authenticate("google"), (req, res) => {
+  // console.log(req.user);
+  tempUser = req.user;
+  if (tempUser) res.redirect("http://localhost:3001/checkauth");
+});
+router.get("/google/success", (req, res) => {
+  const secret = process.env.JWT_SECRET;
+  const accessToken = jwt.sign(
+    {
+      data: {
+        userId: tempUser.userId,
+        username: tempUser.username,
+      },
+    },
+    secret
+  );
+  res.status(200).send({ accessToken: accessToken }).end();
+});
+
+//facebook
+router.get("/facebook", passport.authenticate("facebook"));
+router.get("/facebook/redirect", passport.authenticate("facebook"), (req, res) => {
+  // console.log(req.user);
+  tempUser = req.user;
+  if (tempUser) res.redirect("http://localhost:3001/checkauth");
+});
+
 
 module.exports = router;

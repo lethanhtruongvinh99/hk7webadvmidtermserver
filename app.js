@@ -5,6 +5,7 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
+const passportSetup = require("./config/passportsetup")
 require("dotenv").config();
 
 let indexRouter = require("./routes/index");
@@ -14,8 +15,10 @@ let signupRouter = require("./controller/signup_controller");
 let loginRouter = require("./controller/login_controller");
 let columnRouter = require("./Components/columns/");
 let taskRouter = require("./Components/tasks");
+const passport = require("passport");
 
 var app = express();
+app.use(passport.initialize());
 app.use(cors());
 app.options("*", cors());
 app.use(function (req, res, next) {

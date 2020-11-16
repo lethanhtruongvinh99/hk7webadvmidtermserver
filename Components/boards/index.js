@@ -8,6 +8,9 @@ const jwt = require("jsonwebtoken");
 
 router.get("/", async (req, res) => {
   const token = req.headers.authorization;
+  if (token === "null") {
+    return res.status(401).send([]).end();
+  }
   if (token) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decoded.data.userId;
