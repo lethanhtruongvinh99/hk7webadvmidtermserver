@@ -10,6 +10,9 @@ const passport = require("passport");
 const { route } = require("../routes");
 
 let tempUser;
+const localhost3000 = "http://localhost:3000";
+const localhost3000 = "http://localhost:3001";
+
 
 router.use(
   bodyParser.urlencoded({
@@ -74,7 +77,7 @@ router.get(
 router.get("/google/redirect", passport.authenticate("google"), (req, res) => {
   // console.log(req.user);
   tempUser = req.user;
-  if (tempUser) res.redirect("http://localhost:3001/checkauth");
+  if (tempUser) res.redirect(localhost3000 + "/checkauth");
 });
 router.get("/google/success", (req, res) => {
   const secret = process.env.JWT_SECRET;
@@ -95,7 +98,7 @@ router.get("/facebook", passport.authenticate("facebook"));
 router.get("/facebook/redirect", passport.authenticate("facebook"), (req, res) => {
   // console.log(req.user);
   tempUser = req.user;
-  if (tempUser) res.redirect("http://localhost:3001/checkauth");
+  if (tempUser) res.redirect(localhost3000 + "/checkauth");
 });
 
 
