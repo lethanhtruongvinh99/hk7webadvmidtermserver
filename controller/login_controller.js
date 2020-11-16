@@ -11,8 +11,7 @@ const { route } = require("../routes");
 
 let tempUser;
 const localhost3000 = "http://localhost:3000";
-const localhost3000 = "http://localhost:3001";
-
+const localhost3001 = "http://localhost:3001";
 
 router.use(
   bodyParser.urlencoded({
