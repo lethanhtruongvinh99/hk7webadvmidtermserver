@@ -47,8 +47,8 @@ router.post("/add", async (req, res) => {
         res.status(200).send({
           message: "Thêm thành công",
           data: {
-            taskId: addNewTask.insertId,
-            boardId: newTask.boardId,
+            commentId: addNewTask.insertId,
+            taskId: newTask.boardId,
             userId: userId,
             content: newTask.content,
             isDeleted: false,
@@ -70,6 +70,7 @@ router.post("/add", async (req, res) => {
 
 router.post("/update", async (req, res) => {
   const token = req.headers.authorization;
+  console.log(req.body);
   if (token === "null") {
     return res.status(401).send({ message: "Bạn chưa đăng nhập" }).end();
   }
